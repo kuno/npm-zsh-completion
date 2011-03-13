@@ -116,7 +116,7 @@ _npm_get_commands() {
   typeset -gA _npm_alias_list
   local hline cmd cmdalias
 
-  _call_program npm npm completion | while read -A hline
+  _call_program npm npm completion 2>/dev/null | while read -A hline
   do
     cmd=$hline[1]
     _npm_cmd_list+=($cmd)
