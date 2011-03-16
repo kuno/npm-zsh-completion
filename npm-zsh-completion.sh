@@ -1,6 +1,6 @@
 #compdef npm
 
-# Zsh completion script for npm, modified from hg version
+# Zsh completion script for npm, modified from hg version.
 # Rename this file to _npm and copy
 # it into your zsh function path (/usr/share/zsh/site-functions for
 # instance)
@@ -60,7 +60,7 @@ _npm() {
   if [[ -z "$cmd" ]]
   then
     _arguments -s -w : $_npm_global_opts \
-    ':npm command:_npm_commands'
+      '*:npm command:_npm_commands'
     return
   fi
 
@@ -97,7 +97,7 @@ _npm() {
   else
     # complete unknown commands normally
     _arguments -s -w : $_npm_global_opts \
-      '*:files:_npm_files'
+      '*:files:_npm_targets'
   fi
 }
 
@@ -116,22 +116,117 @@ _npm_get_commands() {
   typeset -gA _npm_alias_list
   local hline cmd cmdalias
 
-  _call_program npm npm completion 2>/dev/null | while read -A hline
-  do
-    cmd=$hline[1]
-    _npm_cmd_list+=($cmd)
+  _call_program npm npm completion 2>/dev/null | while read -A hline; do
+  cmd=$hline[1]
+  _npm_cmd_list+=($cmd)
 
-    for cmdalias in $hline[2,-1]
-    do
-      _npm_cmd_list+=($cmdalias)
-      _npm_alias_list+=($cmdalias $cmd)
-    done
+  for cmdalias in $hline[2,-1]; do
+    _npm_cmd_list+=($cmdalias)
+    _npm_alias_list+=($cmdalias $cmd)
   done
+done
+
+_npm_cmd_list+=('list')
 }
 
 _npm_commands() {
   (( $#_npm_cmd_list )) || _npm_get_commands
   _describe -t commands 'npm command' _npm_cmd_list
+}
+
+# Furtur improvement in the future?
+_npm_get_targets() {
+  typeset -ga _npm_target_list
+
+  for t in $(ls .); do
+    _npm_target_list+=($t)
+  done
+}
+
+_npm_targets() {
+  (( $#_npm_file_list)) || _npm_get_targets
+  _describe -t commands 'npm targets' _npm_target_list
+}
+
+_npm_get_installed_packages() {
+  typeset -ga _npm_installed_package_list
+  local hline package
+
+  _call_program npm npm list installed 2>/dev/null | while read -A hline; do
+  package=$hline[1]
+  _npm_installed_package_list+=($package)
+done
+}
+
+_npm_installed_packages() {
+  (( $#_npm_package_list )) || _npm_get_installed_packages
+  _describe -t commands 'npm installed package' _npm_installed_package_list
+}
+
+_npm_get_ls_filters() {
+  typeset -ga _npm_ls_filter_list
+
+  for f in 'installed' 'stable'; 
+  do
+    _npm_ls_filter_list+=($f)
+  done
+}
+
+_npm_ls_filters() {
+  (( $#_npm_ls_filter_list )) || _npm_get_ls_filters
+  _describe -t commands 'npm list filter' _npm_ls_filter_list
+}
+
+_npm_get_config_methods() {
+  typeset -ga _npm_config_method_list
+
+  for m in 'set' 'get' 'list' 'delete' 'edit'; do
+    _npm_config_method_list+=($m)
+  done
+}
+
+_npm_config_methods() {
+  (( $#_npm_config_method_list )) || _npm_get_config_methods
+  _describe -t commands 'npm config method' _npm_config_method_list
+}
+
+_npm_get_config_key_list() {
+  typeset -ga _npm_config_key_list
+  local hline key
+
+  _call_program npm npm config list 2>/dev/null | while read -A hline; do
+  key=$hline[1]
+  _npm_config_key_list+=($key)
+done
+}
+
+_npm_config_keys() {
+  (( $#_npm_config_key_list )) || _npm_get_config_key_list
+  _describe -t commands 'npm config key' _npm_config_key_list
+}
+
+_npm_cmd_config() {
+  _arguments -s -w : $_npm_global_opts \
+    '*:npm command:_npm_config_methods'  
+}
+
+_npm_cmd_help() {
+  _arguments -s -w : $_npm_global_opts \
+    '*:npm command:_npm_commands' 
+}
+
+_npm_cmd_ls() {
+  _arguments -s -w : $_npm_global_opts \
+    '*:npm command:_npm_ls_filters'  
+}
+
+_npm_cmd_list() {
+  _npm_cmd_ls 
+}
+
+_npm_cmd_uninstall() {
+  _arguments -s -w : $_npm_global_opts \
+    '*:npm command:_npm_installed_packages'  
 }
 
 _npm "$@"
