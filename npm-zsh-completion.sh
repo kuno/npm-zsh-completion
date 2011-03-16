@@ -1,6 +1,6 @@
 #compdef npm
 
-# Zsh completion script for npm, modified from hg version.
+# Zsh completion script for npm, modified from mercurial version.
 # Rename this file to _npm and copy
 # it into your zsh function path (/usr/share/zsh/site-functions for
 # instance)
@@ -14,9 +14,13 @@
 # autoload -U compinit
 # compinit
 #
+# Mercurial zsh completion scrpit:
 # Copyright (C) 2005, 2006 Steve Borho <steve@borho.org>
 # Copyright (C) 2006-10 Brendan Cully <brendan@kublai.com>
-# Copyright (C) 2011 Qing 'kuno' Guan <neokuno AT gmail DOT com>
+#
+# Npm zsh completion script:
+# Maintainer: Qing 'kuno' Guan <neokuno AT gmail DOT com>
+# Contributor: Johan Sundström <>
 #
 # Permission is hereby granted, without written agreement and without
 # licence or royalty fees, to use, copy, modify, and distribute this
